@@ -2,15 +2,16 @@ import express from "express";
 import bcrypt from "bcryptjs";
 import auth from "../middleware/auth.middleware";
 import User from "../models/user.model";
+import { successResponse, errorResponse } from "../utils/apiResponse";
 
 const router = express.Router();
 
 router.get("/", auth, async (req, res) => {
   try {
     const users = await User.find().select("-password");
-    res.json(users);
+    return successResponse(res, "Get all user success !", users);
   } catch (err) {
-    res.status(500).send("Server error " + err.message);
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
 
@@ -18,9 +19,13 @@ router.get("/:id", auth, async (req, res) => {
   try {
     const user = await User.findById(req.params.id).select("-password");
     if (!user) return res.status(404).json({ msg: "User not found" });
-    res.json(user);
+    return successResponse(
+      res,
+      `Get user by id ${req.params.id} success !`,
+      user
+    );
   } catch (err) {
-    res.status(500).send("Server error " + err.message);
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
 
@@ -40,18 +45,22 @@ router.put("/:id", auth, async (req, res) => {
     const user = await User.findByIdAndUpdate(res.params.id, updatedFields, {
       new: true,
     });
-    res.json({ msg: "User updated", user });
+    return successResponse(res, "Update user success !", user);
   } catch (err) {
-    res.status(500).send("Server error " + err.message);
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
 
 router.delete("/:id", auth, async (req, res) => {
   try {
     await User.findByIdAndDelete(req.params.id);
-    res.json({ msg: "User deleted" });
+    return successResponse(
+      res,
+      `Delete user by id ${req.params.id} success !`,
+      null
+    );
   } catch (err) {
-    res.status(500).send("Server error");
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
 
@@ -61,8 +70,14 @@ router.get("search/:username", auth, async (req, res) => {
     const users = await User.find({
       username: { $regex: keyword, $options: "i" },
     }).select("-password");
-    res.json(users);
+    return successResponse(
+      res,
+      `Search user by username ${req.params.username} success !`,
+      users
+    );
   } catch (err) {
-    res.status(500).send("Server error");
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
+
+module.exports = router;

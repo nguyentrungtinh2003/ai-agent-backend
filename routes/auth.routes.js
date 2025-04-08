@@ -2,6 +2,7 @@ import express from "express";
 import jwt from "jwt";
 import bcrypt from "bcryptjs";
 import User from "../models/user.model";
+import { successResponse, errorResponse } from "../utils/apiResponse";
 
 const router = express.Router();
 
@@ -18,9 +19,9 @@ router.post("/register", async (req, res) => {
     user = new User({ username, email, password: hashedPass });
     await user.save();
 
-    res.status(201).json({ msg: "User registered successfully" });
+    return successResponse(res, "Register success !", user);
   } catch (e) {
-    res.status(500).send("Server error " + e.message);
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
 
@@ -39,9 +40,9 @@ router.post("/login", async (req, res) => {
       expiresIn: "1h",
     });
 
-    res.json({ token });
+    return successResponse(res, "Login success !", token);
   } catch (e) {
-    res.status(500).send("Server error " + e.message);
+    return errorResponse(res, 500, "Something went wrong");
   }
 });
 
