@@ -1,5 +1,5 @@
-import userService from "../services/user.service.js";
-import { successResponse, errorResponse } from "../utils/apiResponse";
+import userService from "../services/user.service.js ";
+import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
 const register = async (req, res) => {
   try {
@@ -80,7 +80,7 @@ const searchUser = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   register,
   login,
   getAllUser,

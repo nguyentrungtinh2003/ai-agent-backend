@@ -82,7 +82,7 @@ const searchUser = async (req, res) => {
   }
 };
 
-module.exports = {
+export default {
   register,
   login,
   getAllUser,

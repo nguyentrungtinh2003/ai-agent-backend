@@ -10,4 +10,4 @@ router.get("/search/:username", auth, userController.searchUser);
 router.put("/:id", auth, userController.updateUser);
 router.delete("/:id", auth, userController.deleteUser);
 
-module.exports = router;
+export default router;
