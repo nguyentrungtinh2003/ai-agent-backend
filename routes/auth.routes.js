@@ -44,3 +44,5 @@ router.post("/login", async (req, res) => {
     res.status(500).send("Server error " + e.message);
   }
 });
+
+module.exports = router;
