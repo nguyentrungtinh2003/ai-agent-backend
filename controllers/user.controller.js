@@ -30,6 +30,16 @@ const forgotPassword = async (req, res) => {
   }
 };
 
+const resetPassword = async (req, res) => {
+  try {
+    const { email, otp, newPassword } = req.body;
+    const user = await userService.resetPassword(email, otp, newPassword);
+    return successResponse(res, "Reset password success !", user);
+  } catch (e) {
+    return errorResponse(res, "Something went wrong", e.message);
+  }
+};
+
 const getAllUser = async (req, res) => {
   try {
     const users = await userService.getAllUser();
@@ -94,6 +104,7 @@ export default {
   register,
   login,
   forgotPassword,
+  resetPassword,
   getAllUser,
   getUserById,
   updateUser,

@@ -49,6 +49,23 @@ const forgotPassword = async (email) => {
   return user;
 };
 
+const resetPassword = async (email, otp, newPassword) => {
+  const user = await User.findOne({ email });
+  if (!user) return "User not found !";
+  if (user.resetOTP !== otp || Date.now() > user.otpExpire)
+    return "OTP invalid !";
+
+  const salt = await bcrypt.getSalt(10);
+  const hashedPass = await bcrypt.hash(password, salt);
+
+  user.password = hashedPass;
+  user.resetOTP = null;
+  user.otpExpire = null;
+
+  await user.save();
+  return user;
+};
+
 const getAllUser = async () => {
   const users = await User.find().select("-password");
   return users;
@@ -104,6 +121,7 @@ export default {
   register,
   login,
   forgotPassword,
+  resetPassword,
   getAllUser,
   getUserById,
   updateUser,
