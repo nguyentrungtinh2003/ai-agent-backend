@@ -20,6 +20,16 @@ const login = async (req, res) => {
   }
 };
 
+const forgotPassword = async (req, res) => {
+  try {
+    const email = req.body;
+    const user = await userService.forgotPassword(email);
+    return successResponse(res, "Send OTP success !", user);
+  } catch (e) {
+    return errorResponse(res, "Something went wrong", e.message);
+  }
+};
+
 const getAllUser = async (req, res) => {
   try {
     const users = await userService.getAllUser();
@@ -83,6 +93,7 @@ const searchUser = async (req, res) => {
 export default {
   register,
   login,
+  forgotPassword,
   getAllUser,
   getUserById,
   updateUser,

@@ -1,4 +1,5 @@
 import User from "../models/user.model.js";
+import sendMail from "../utils/sendMail.js";
 
 const register = async (userData) => {
   const { username, email, password } = userData;
@@ -31,6 +32,23 @@ const login = async (userData) => {
   return token;
 };
 
+const forgotPassword = async (email) => {
+  const user = await User.findOne({ email });
+  if (!user) return "User not found !";
+
+  const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Tạo 6 số
+  const otpExpire = Date.now() + 5 * 60 * 1000; // 5 phút
+
+  user.resetOTP = otp;
+  user.otpExpire = otpExpire;
+
+  await user.save();
+
+  await sendMail(email, "Mã OTP tạo mới tài khoản", `Mã OTP của bạn là ${otp}`);
+
+  return user;
+};
+
 const getAllUser = async () => {
   const users = await User.find().select("-password");
   return users;
@@ -38,7 +56,7 @@ const getAllUser = async () => {
 
 const getUserById = async (id) => {
   const user = await User.findById(id).select("-password");
-  if (!user) return res.status(404).json({ msg: "User not found" });
+  if (!user) return "User not found !";
 
   return user;
 };
@@ -85,8 +103,10 @@ const searchUser = async (req, res) => {
 export default {
   register,
   login,
+  forgotPassword,
   getAllUser,
   getUserById,
   updateUser,
   deleteUser,
+  searchUser,
 };
