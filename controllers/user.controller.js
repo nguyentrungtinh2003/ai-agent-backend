@@ -7,7 +7,7 @@ const register = async (req, res) => {
 
     return successResponse(res, "Register success !", user);
   } catch (e) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 
@@ -16,7 +16,7 @@ const login = async (req, res) => {
     const token = await userService.login(req.body);
     return successResponse(res, "Login success !", token);
   } catch (e) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 
@@ -25,7 +25,7 @@ const getAllUser = async (req, res) => {
     const users = await userService.getAllUser();
     return successResponse(res, "Get all user success !", users);
   } catch (err) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 
@@ -39,7 +39,7 @@ const getUserById = async (req, res) => {
       user
     );
   } catch (err) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 
@@ -48,7 +48,7 @@ const updateUser = async (req, res) => {
     const user = await userService.updateUser(req.params.id, req.body);
     return successResponse(res, "Update user success !", user);
   } catch (err) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 
@@ -61,7 +61,7 @@ const deleteUser = async (req, res) => {
       null
     );
   } catch (err) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 
@@ -76,7 +76,7 @@ const searchUser = async (req, res) => {
       users
     );
   } catch (err) {
-    return errorResponse(res, 500, "Something went wrong");
+    return errorResponse(res, "Something went wrong", e.message);
   }
 };
 

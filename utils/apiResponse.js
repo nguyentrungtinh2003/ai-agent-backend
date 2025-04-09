@@ -7,14 +7,9 @@ export const successResponse = (res, message, data) => {
   });
 };
 
-export const errorResponse = (
-  res,
-  status = 500,
-  message = "Server error",
-  data = null
-) => {
-  return res.status(status).json({
-    status,
+export const errorResponse = (res, message = "Server error", data = null) => {
+  return res.status(500).json({
+    status: 500,
     message,
     data,
     timestamp: new Date(),
