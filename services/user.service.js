@@ -7,10 +7,18 @@ const register = async (userData) => {
   let user = await User.findOne({ email });
   if (user) return res.status(400).json({ msg: "User already exists" });
 
-  const salt = await bcrypt.getSalt(10);
+  const salt = await bcrypt.genSalt(10);
+
   const hashedPass = await bcrypt.hash(password, salt);
 
   user = new User({ username, email, password: hashedPass });
+  await user.save();
+
+  await sendMail(
+    user.email,
+    "Đăng ký thành công !",
+    "Thông tin đăng ký " + user
+  );
 
   return user;
 };
@@ -52,11 +60,13 @@ const forgotPassword = async (email) => {
 const resetPassword = async (email, otp, newPassword) => {
   const user = await User.findOne({ email });
   if (!user) return "User not found !";
+  if (!/^\d{6}$/.test(otp)) return "OTP format invalid!";
   if (user.resetOTP !== otp || Date.now() > user.otpExpire)
     return "OTP invalid !";
 
-  const salt = await bcrypt.getSalt(10);
-  const hashedPass = await bcrypt.hash(password, salt);
+  const salt = await bcrypt.genSalt(10);
+
+  const hashedPass = await bcrypt.hash(newPassword, salt);
 
   user.password = hashedPass;
   user.resetOTP = null;
