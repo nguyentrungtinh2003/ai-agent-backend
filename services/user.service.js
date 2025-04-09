@@ -45,14 +45,14 @@ const forgotPassword = async (email) => {
   if (!user) return "User not found !";
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Tạo 6 số
-  const otpExpire = Date.now() + 5 * 60 * 1000; // 5 phút
+  const otpExpire = Date.now() + 3 * 60 * 1000; // 5 phút
 
   user.resetOTP = otp;
   user.otpExpire = otpExpire;
 
   await user.save();
 
-  await sendMail(email, "Mã OTP tạo mới tài khoản", `Mã OTP của bạn là ${otp}`);
+  await sendMail(email, "Mã OTP tạo mới mật khẩu", `Mã OTP của bạn là ${otp}`);
 
   return user;
 };
@@ -77,12 +77,12 @@ const resetPassword = async (email, otp, newPassword) => {
 };
 
 const getAllUser = async () => {
-  const users = await User.find().select("-password");
+  const users = await User.find().select("-password -resetOTP -otpExpire");
   return users;
 };
 
 const getUserById = async (id) => {
-  const user = await User.findById(id).select("-password");
+  const user = await User.findById(id).select("-password -resetOTP -otpExpire");
   if (!user) return "User not found !";
 
   return user;
@@ -116,7 +116,7 @@ const searchUser = async (req, res) => {
     const keyword = req.params.username;
     const users = await User.find({
       username: { $regex: keyword, $options: "i" },
-    }).select("-password");
+    }).select("-password -resetOTP -otpExpire");
     return successResponse(
       res,
       `Search user by username ${req.params.username} success !`,
