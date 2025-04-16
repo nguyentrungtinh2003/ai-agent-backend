@@ -12,4 +12,4 @@ const DocumentSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Document", DocumentSchema);
+export default mongoose.model("document", DocumentSchema);

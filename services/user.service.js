@@ -1,17 +1,19 @@
-import User from "../models/user.model.js";
+import UserModel from "../models/user.model.js";
 import sendMail from "../utils/sendMail.js";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
 
 const register = async (userData) => {
   const { username, email, password } = userData;
 
-  let user = await User.findOne({ email });
+  let user = await UserModel.findOne({ email });
   if (user) return res.status(400).json({ msg: "User already exists" });
 
   const salt = await bcrypt.genSalt(10);
 
   const hashedPass = await bcrypt.hash(password, salt);
 
-  user = new User({ username, email, password: hashedPass });
+  user = new UserModel({ username, email, password: hashedPass });
   await user.save();
 
   await sendMail(
@@ -26,7 +28,7 @@ const register = async (userData) => {
 const login = async (userData) => {
   const { email, password } = userData;
 
-  let user = await User.findOne({ email });
+  let user = await UserModel.findOne({ email });
   if (!user) return res.status(400).json({ msg: "Invalid credentials" });
 
   const isMatch = await bcrypt.compare(password, user.password);
@@ -41,7 +43,7 @@ const login = async (userData) => {
 };
 
 const forgotPassword = async (email) => {
-  const user = await User.findOne({ email });
+  const user = await UserModel.findOne({ email });
   if (!user) return "User not found !";
 
   const otp = Math.floor(100000 + Math.random() * 900000).toString(); // Tạo 6 số
@@ -58,7 +60,7 @@ const forgotPassword = async (email) => {
 };
 
 const resetPassword = async (email, otp, newPassword) => {
-  const user = await User.findOne({ email });
+  const user = await UserModel.findOne({ email });
   if (!user) return "User not found !";
   if (!/^\d{6}$/.test(otp)) return "OTP format invalid!";
   if (user.resetOTP !== otp || Date.now() > user.otpExpire)
@@ -77,12 +79,14 @@ const resetPassword = async (email, otp, newPassword) => {
 };
 
 const getAllUser = async () => {
-  const users = await User.find().select("-password -resetOTP -otpExpire");
+  const users = await UserModel.find().select("-password -resetOTP -otpExpire");
   return users;
 };
 
 const getUserById = async (id) => {
-  const user = await User.findById(id).select("-password -resetOTP -otpExpire");
+  const user = await UserModel.findById(id).select(
+    "-password -resetOTP -otpExpire"
+  );
   if (!user) return "User not found !";
 
   return user;
@@ -96,25 +100,25 @@ const updateUser = async (id, userData) => {
   if (email) updatedFields.email = email;
 
   if (password) {
-    const salt = await bcrypt.getSalt(10);
+    const salt = await bcrypt.genSalt(10);
     updatedFields.password = await bcrypt.hash(password, salt);
   }
 
-  const user = await User.findByIdAndUpdate(id, updatedFields, {
+  const user = await UserModel.findByIdAndUpdate(id, updatedFields, {
     new: true,
   });
   return user;
 };
 
 const deleteUser = async (id) => {
-  await User.findByIdAndDelete(id);
+  await UserModel.findByIdAndDelete(id);
   return null;
 };
 
 const searchUser = async (req, res) => {
   try {
     const keyword = req.params.username;
-    const users = await User.find({
+    const users = await UserModel.find({
       username: { $regex: keyword, $options: "i" },
     }).select("-password -resetOTP -otpExpire");
     return successResponse(

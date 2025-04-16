@@ -10,4 +10,4 @@ const SubjectSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Subject", SubjectSchema);
+export default mongoose.model("subject", SubjectSchema);
