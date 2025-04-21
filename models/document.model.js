@@ -6,7 +6,7 @@ const DocumentSchema = new mongoose.Schema(
     description: { type: String, required: true },
     fileUrl: { type: String, required: true },
     lecturers: [{ type: mongoose.Schema.ObjectId, ref: "User" }],
-    subjectId: { type: mongoose.Schema.ObjectId, ref: "Subject" },
+    subjects: [{ type: mongoose.Schema.ObjectId, ref: "Subject" }],
     feedbacks: [{ type: mongoose.Schema.ObjectId, ref: "Feedback" }],
   },
   { timestamps: true }

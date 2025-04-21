@@ -1,15 +1,27 @@
 import DocumentModel from "../models/document.model";
 import UserModel from "../models/user.model";
 
-const uploadDocument = async (documentData) => {
-  const { name, description, fileUrl } = documentData;
-  const saveDocument = new DocumentModel({
-    name,
-    description,
-    fileUrl,
-  });
+const uploadDocument = async (files) => {
+  if (!files || files.length === 0) {
+    throw new Error("No files uploaded");
+  }
 
-  await saveDocument.save();
+  const savedDocuments = [];
+
+  for (const file of files) {
+    const fileName = path.parse(file.originalname).name;
+
+    const document = new DocumentModel({
+      name: fileName,
+      description: "", // có thể lấy từ req.body nếu cần
+      fileUrl: file.path,
+    });
+
+    await document.save();
+    savedDocuments.push(document);
+  }
+
+  return savedDocuments;
 };
 
 const getAllDocument = async () => {
@@ -24,12 +36,16 @@ const getDocumentById = async (id) => {
 
 const updateDocument = async (id, documentData) => {
   const { name, description, fileUrl, lecturers } = documentData;
-  const user = await UserModel.findById(lecturerId);
   const updatedFields = {};
   if (name) updatedFields.name = name;
   if (description) updatedFields.description = description;
   if (fileUrl) updatedFields.fileUrl = fileUrl;
-  if (lecturers) updatedFields.lecturerId = [user.id];
+
+  if (lecturers && Array.isArray(lecturers)) {
+    const validLecturers = await UserModel.find({ _id: { $in: lecturers } });
+
+    updatedFields.lecturers = validLecturers.map((user) => user._id);
+  }
 
   const documentUpdate = await DocumentModel.findByIdAndUpdate(
     id,
