@@ -3,7 +3,7 @@ import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
 const register = async (req, res) => {
   try {
-    const user = await userService.register(req.body);
+    const user = await userService.register(req.img, req.body);
 
     return successResponse(res, "Register success !", user);
   } catch (e) {

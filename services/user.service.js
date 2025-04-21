@@ -2,8 +2,10 @@ import UserModel from "../models/user.model.js";
 import sendMail from "../utils/sendMail.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
+import { extractPublicId } from "../middleware/upload.middleware.js";
+import cloudinary from "../config/cloudinary.config.js";
 
-const register = async (userData) => {
+const register = async (img, userData) => {
   const { username, email, password } = userData;
 
   let user = await UserModel.findOne({ email });
@@ -13,7 +15,12 @@ const register = async (userData) => {
 
   const hashedPass = await bcrypt.hash(password, salt);
 
-  user = new UserModel({ username, email, password: hashedPass });
+  user = new UserModel({
+    username,
+    email,
+    password: hashedPass,
+    img: img.path,
+  });
   await user.save();
 
   await sendMail(
@@ -92,7 +99,7 @@ const getUserById = async (id) => {
   return user;
 };
 
-const updateUser = async (id, userData) => {
+const updateUser = async (id, img, userData) => {
   const { username, email, password } = userData;
   let updatedFields = {};
 
@@ -102,6 +109,12 @@ const updateUser = async (id, userData) => {
   if (password) {
     const salt = await bcrypt.genSalt(10);
     updatedFields.password = await bcrypt.hash(password, salt);
+  }
+  if (img) {
+    updatedFields.imgUrl = img.path;
+    const userOld = await UserModel.findById(id);
+    const publicId = await extractPublicId(userOld.imgUrl);
+    await cloudinary.uploader.destroy(publicId);
   }
 
   const user = await UserModel.findByIdAndUpdate(id, updatedFields, {

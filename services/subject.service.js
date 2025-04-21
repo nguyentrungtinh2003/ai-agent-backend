@@ -1,4 +1,6 @@
 import SubjectModel from "../models/subject.model";
+import cloudinary from "../config/cloudinary.config";
+import { extractPublicId } from "../middleware/upload.middleware";
 
 const addSubject = async (file, subjectData) => {
   const { name, description, imgUrl, documents } = subjectData;
@@ -25,11 +27,16 @@ const getSubjectById = async (id) => {
 };
 
 const updateSubject = async (id, file, subjectData) => {
-  const { name, description, imgUrl, lecturers } = documentData;
+  const { name, description, lecturers } = subjectData;
   const updatedFields = {};
   if (name) updatedFields.name = name;
   if (description) updatedFields.description = description;
-  if (fileUrl) updatedFields.fileUrl = file.path;
+  if (fileUrl) {
+    updatedFields.fileUrl = file.path;
+    const subjectOld = await SubjectModel.findById(id);
+    const publicId = await extractPublicId(subjectOld.imgUrl);
+    await cloudinary.uploader.destroy(publicId);
+  }
 
   if (lecturers && Array.isArray(lecturers)) {
     const validLecturers = await UserModel.find({ _id: { $in: lecturers } });

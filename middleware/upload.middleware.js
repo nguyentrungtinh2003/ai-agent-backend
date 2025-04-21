@@ -12,6 +12,14 @@ const storage = new CloudinaryStorage({
   },
 });
 
+const extractPublicId = (url) => {
+  const parts = url.split("/");
+  const fileWithExt = parts[parts.length - 1]; // 1713916275402-myfile.jpg
+  const folder = parts[parts.length - 2]; // subjects
+  const fileName = fileWithExt.substring(0, fileWithExt.lastIndexOf(".")); // bỏ phần .jpg
+  return `${folder}/${fileName}`;
+};
+
 const upload = multer({ storage });
 
-export default upload;
+export default { upload, extractPublicId };
