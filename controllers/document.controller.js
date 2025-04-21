@@ -11,4 +11,50 @@ const uploadDocument = async (req, res) => {
   }
 };
 
-export default { uploadDocument };
+const getAllDocument = async () => {
+  try {
+    const documents = await documentService.getAllDocument();
+
+    return successResponse(res, "Get all document success !", documents);
+  } catch (e) {
+    return errorResponse(res, "Something went wrong", e.message);
+  }
+};
+
+const getDocumentById = async (req, res) => {
+  try {
+    const document = await documentService.getDocumentById(req.params.id);
+
+    return successResponse(
+      res,
+      `Get document by id ${req.params.id} success !`,
+      document
+    );
+  } catch (e) {
+    return errorResponse(res, "Something went wrong", e.message);
+  }
+};
+
+const updateDocument = async (req, res) => {
+  try {
+    const document = await documentService.updateDocument(
+      req.params.id,
+      req.body
+    );
+
+    return successResponse(
+      res,
+      `Update document by id ${req.params.id} success !`,
+      document
+    );
+  } catch (e) {
+    return errorResponse(res, "Something went wrong", e.message);
+  }
+};
+
+export default {
+  uploadDocument,
+  getAllDocument,
+  getDocumentById,
+  updateDocument,
+};
