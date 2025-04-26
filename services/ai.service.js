@@ -1,3 +1,4 @@
+import { GoogleGenAI } form "@google/genai";
 import axios from "axios";
 
 const callDeepSeek = async (prompt) => {
