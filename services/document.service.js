@@ -1,7 +1,8 @@
-import DocumentModel from "../models/document.model";
-import UserModel from "../models/user.model";
-import cloudinary from "../config/cloudinary.config";
-import { extractPublicId } from "../middleware/upload.middleware";
+import DocumentModel from "../models/document.model.js";
+import UserModel from "../models/user.model.js";
+import cloudinary from "../config/cloudinary.config.js";
+import fileHandler from "../middleware/upload.middleware.js";
+const { extractPublicId } = fileHandler;
 
 const uploadDocument = async (files) => {
   if (!files || files.length === 0) {

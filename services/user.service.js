@@ -2,7 +2,9 @@ import UserModel from "../models/user.model.js";
 import sendMail from "../utils/sendMail.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
-import { extractPublicId } from "../middleware/upload.middleware.js";
+import fileHandler from "../middleware/upload.middleware.js";
+const { extractPublicId } = fileHandler;
+
 import cloudinary from "../config/cloudinary.config.js";
 
 const register = async (img, userData) => {

@@ -1,4 +1,4 @@
-import subjectService from "../services/subject.service";
+import subjectService from "../services/subject.service.js";
 import { successResponse, errorResponse } from "../utils/apiResponse.js";
 
 const addSubject = async (req, res) => {

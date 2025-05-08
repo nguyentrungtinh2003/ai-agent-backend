@@ -1,9 +1,10 @@
-import SubjectModel from "../models/subject.model";
-import cloudinary from "../config/cloudinary.config";
-import { extractPublicId } from "../middleware/upload.middleware";
+import SubjectModel from "../models/subject.model.js";
+import cloudinary from "../config/cloudinary.config.js";
+import fileHandler from "../middleware/upload.middleware.js";
+const { extractPublicId } = fileHandler;
 
 const addSubject = async (file, subjectData) => {
-  const { name, description, imgUrl, documents } = subjectData;
+  const { name, description } = subjectData;
 
   const subject = new SubjectModel({
     name,
